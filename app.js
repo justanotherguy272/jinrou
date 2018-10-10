@@ -4,14 +4,15 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let bodyParser = require('body-parser');
+const mysql      = require('mysql');
 // let passport = require('passport');
 let app = express();
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let roomsRouter = require('./routes/rooms');
 let passportRouter = require('./routes/passport');
-
-
+let connection = require('./config/database');
+let user = require('./model/user')(mysql, connection);
 
 //TODO mysql
 // view engine setup
