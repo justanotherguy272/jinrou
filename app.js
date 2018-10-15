@@ -5,14 +5,15 @@ let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let bodyParser = require('body-parser');
 const mysql      = require('mysql');
-// let passport = require('passport');
 let app = express();
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let roomsRouter = require('./routes/rooms');
 let passportRouter = require('./routes/passport');
-let connection = require('./config/database');
-let user = require('./model/user')(mysql, connection);
+global.db = require('./config/database');
+let user = require('./db/user')(mysql);
+let User = require('./model/user');
+
 
 //TODO mysql
 // view engine setup
@@ -49,6 +50,10 @@ app.use(function(err, req, res, next) {
 });
 
 let http = require('http');
+
 module.exports = app;
 let server = http.createServer(app);
 server.listen(4000);
+User.createUser('duc11', '123123');
+User.createUser('duc21', '123123');
+User.getUser(2);

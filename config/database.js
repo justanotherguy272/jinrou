@@ -1,4 +1,4 @@
-const mysql      = require('mysql');
+const mysql = require('mysql');
 // https://github.com/mysqljs/mysql
 module.exports = mysql.createConnection({
     host     : 'localhost',
