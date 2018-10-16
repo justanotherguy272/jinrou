@@ -1,15 +1,14 @@
 let LocalStrategy = require('passport-local').Strategy;
-let User = require('../model/user');
 
-module.exports = function(passport) {
+module.exports = function(passport, User) {
     passport.serializeUser(function(user, done) {
         done(null, user.id)
     });
 
     passport.deserializeUser(function(id, done) {
-        // User.findById(id, function(err, user) {
-        //     done(err, user)
-        // })
+        User.getUserById(id, function(err, user) {
+            done(err, user);
+        })
     });
 
     passport.use('local-signup', new LocalStrategy({
@@ -17,33 +16,18 @@ module.exports = function(passport) {
             usernameField : 'name',
             passwordField : 'password',
             passReqToCallback : true // allows us to pass back the entire request to the callback
-        },
-        function(req, name, password, done) {
-        console.log(name + ' - ' +password);
-            // asynchronous
-            // User.findOne wont fire unless data is sent back
-            process.nextTick(function() {
-
-                // find a user whose email is the same as the forms email
-                // we are checking to see if the user trying to login already exists
-                // User.findOne({ 'local.name' :  name }, function(err, user) {
-                //     // if there are any errors, return the error
-                //     if (err)
-                //         return done(err);
-                //
-                //     // check to see if theres already a user with that email
-                //     if (user) {
-                //         return done(null, false, req.flash('signupMessage', 'That email is already taken.'));
-                //     } else {
-                //         // save the user
-                //
-                //     }
-                //
-                // });
-                if(User.createUser(name, User.generateHashPassword(password))) {
-                    done(null, User)
-                }
-            });
-
-        }));
+        }, function(req, name, password, done) {
+        console.log('passport: ' + name + ' - ' +password);
+        User.createUser(name, password, (result) => {
+            if(result) {
+                console.log('success');
+                User.getUserByName(name, (user) => {
+                    done(null, user);
+                })
+            } else {
+                console.log('error');
+                done(null, false);
+            }
+        })
+    }));
 };

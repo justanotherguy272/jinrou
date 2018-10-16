@@ -6,14 +6,15 @@ let logger = require('morgan');
 let bodyParser = require('body-parser');
 const mysql      = require('mysql');
 let app = express();
+global.db = require('./config/database');
+let user = require('./db/user')(mysql);
+let User = require('./model/user');
+let passport = require('passport');
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let roomsRouter = require('./routes/rooms');
 let passportRouter = require('./routes/passport');
-global.db = require('./config/database');
-let user = require('./db/user')(mysql);
-let User = require('./model/user');
-
+require('./config/passport')(passport, User);
 
 //TODO mysql
 // view engine setup
@@ -23,8 +24,11 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser({secret: 'cat'}));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static("public"));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/users/', usersRouter);
@@ -54,6 +58,3 @@ let http = require('http');
 module.exports = app;
 let server = http.createServer(app);
 server.listen(4000);
-User.createUser('duc11', '123123');
-User.createUser('duc21', '123123');
-User.getUser(2);

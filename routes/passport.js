@@ -1,9 +1,8 @@
 let express = require('express');
 let router = express.Router();
 let passport = require('passport');
-require('../config/passport')(passport);
 
-router.get('/login', passport.authenticate(), function(req, res) {
+router.get('/login', function(req, res) {
     res.send({messages: 'Trying to login'})
 });
 
@@ -17,14 +16,13 @@ router.get('/login', passport.authenticate(), function(req, res) {
 // });
 
 router.get('/signup', function(req, res) {
-    res.send(JSON.stringify({curr_view: 'sign_up'}));
+    res.send(JSON.stringify({curr_view: 'sign-up-page'}));
 });
 
-router.post('/signing_up', passport.authenticate('local-signup', {
-    successRedirect: '/',
-    failureRedirect: '/authen/signup'
-}, function(req, res) {
-    console.log(req.body.name + ' - ' +req.body.password);
-}));
+router.post('/signing_up', passport.authenticate('local-signup'), function(req, res, next) {
+    console.log('SignUp_Cookies: ', req.cookies);
+    console.log('SignUp_Signed Cookies: ', req.signedCookies);
+    res.send(JSON.stringify({curr_view: 'home', logged_in: true, user: req.user}));
+});
 
 module.exports = router;
