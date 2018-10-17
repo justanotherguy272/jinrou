@@ -15,6 +15,7 @@ let usersRouter = require('./routes/users');
 let roomsRouter = require('./routes/rooms');
 let passportRouter = require('./routes/passport');
 require('./config/passport')(passport, User);
+const session = require('express-session');
 
 //TODO mysql
 // view engine setup
@@ -24,9 +25,16 @@ app.set('view engine', 'ejs');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser({secret: 'cat'}));
+// app.use(cookieParser({secret: 'cat'}));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static("public"));
+
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
