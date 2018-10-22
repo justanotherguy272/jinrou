@@ -43,4 +43,9 @@ router.get('/session', function(req, res) {
   }
 });
 
+router.get('/logout', function(req, res, next) {
+  req.logout();
+  res.send(JSON.stringify({redirect_to: '/'}));
+});
+
 module.exports = router;
