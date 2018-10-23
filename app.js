@@ -4,7 +4,7 @@ let path = require('path');
 let cookieParser = require('cookie-parser');
 let logger = require('morgan');
 let bodyParser = require('body-parser');
-const mysql      = require('mysql');
+const mysql = require('mysql');
 let app = express();
 global.db = require('./config/database');
 let user = require('./db/user')(mysql);
@@ -18,6 +18,15 @@ require('./config/passport')(passport, User);
 const session = require('express-session');
 
 //TODO mysql
+require('./db/game')(mysql);
+require('./db/round')(mysql);
+require('./db/role')(mysql);
+require('./db/room')(mysql);
+require('./db/game_role')(mysql);
+require('./db/game_round')(mysql);
+
+//model
+let Room = require('./model/room');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -66,3 +75,13 @@ let http = require('http');
 module.exports = app;
 let server = http.createServer(app);
 server.listen(4000);
+Room.getRooms()
+  .then(data => console.log(data))
+  .catch(data => console.log('err: ' + data));
+Room.createRoom(null, 'Duc', 1, null)
+  .then(data => console.log(data))
+  .catch(data => console.log('err: ' + data));
+Room.getRooms()
+  .then(data => console.log(data.length))
+  .catch(data => console.log('err: ' + data));
+
