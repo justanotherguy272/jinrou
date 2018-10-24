@@ -13,6 +13,7 @@ let passport = require('passport');
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let roomsRouter = require('./routes/rooms');
+let rolesRouter = require('./routes/roles');
 let passportRouter = require('./routes/passport');
 require('./config/passport')(passport, User);
 const session = require('express-session');
@@ -51,6 +52,7 @@ app.use('/', indexRouter);
 app.use('/users/', usersRouter);
 app.use('/rooms/', roomsRouter);
 app.use('/authen/', passportRouter);
+app.use('/roles/', rolesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -75,13 +77,4 @@ let http = require('http');
 module.exports = app;
 let server = http.createServer(app);
 server.listen(4000);
-Room.getRooms()
-  .then(data => console.log(data))
-  .catch(data => console.log('err: ' + data));
-Room.createRoom(null, 'Duc', 1, null)
-  .then(data => console.log(data))
-  .catch(data => console.log('err: ' + data));
-Room.getRooms()
-  .then(data => console.log(data.length))
-  .catch(data => console.log('err: ' + data));
 
