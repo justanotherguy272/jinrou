@@ -10,6 +10,7 @@ global.db = require('./config/database');
 let user = require('./db/user')(mysql);
 let User = require('./model/user');
 let passport = require('passport');
+let Room = require('./model/room');
 let indexRouter = require('./routes/index');
 let usersRouter = require('./routes/users');
 let roomsRouter = require('./routes/rooms');
@@ -17,7 +18,10 @@ let rolesRouter = require('./routes/roles');
 let passportRouter = require('./routes/passport');
 require('./config/passport')(passport, User);
 const session = require('express-session');
-
+let http = require('http');
+let server = http.createServer(app);
+server.listen(4000);
+let io = require('socket.io')(server);
 //TODO mysql
 require('./db/game')(mysql);
 require('./db/round')(mysql);
@@ -25,9 +29,9 @@ require('./db/role')(mysql);
 require('./db/room')(mysql);
 require('./db/game_role')(mysql);
 require('./db/game_round')(mysql);
+require('./db/room_user')(mysql);
 
 //model
-let Room = require('./model/room');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -72,9 +76,12 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-let http = require('http');
+io.on('connection', (socket) => {
+  socket.emit('id', socket.id)
+  io.sockets.emit('noti', socket.id + 'connected!')
+  socket.on('disconnect', () => {
+    io.sockets.emit('noti', socket.id + 'disconnected!')
+  })
+});
 
 module.exports = app;
-let server = http.createServer(app);
-server.listen(4000);
-
